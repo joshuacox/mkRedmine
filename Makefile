@@ -11,20 +11,30 @@ help:
 
 build: builddocker
 
-init: POSTGRES_PASSWD NAME PORT runpostgres runredis runredminit
+init: POSTGRES_PASSWD NAME PORT rmall runpostgresinit runredisinit runredminit
 
-run: POSTGRES_PASSWD NAME PORT runpostgres runredis runredme
+run: POSTGRES_PASSWD NAME PORT rm runpostgres runredis runredme
 
 runbuild: builddocker runpostgres runredis runredminit
 
-runredis:
+runredisinit:
 	$(eval NAME := $(shell cat NAME))
 	docker run --name $(NAME)-redis \
 	-d \
-	--cidfile="redisCID" \
-	--volume=/srv/docker/redis/data:/data \
+	--cidfile="redisinitCID" \
 	redis \
 	redis-server --appendonly yes
+
+runpostgresinit:
+	$(eval NAME := $(shell cat NAME))
+	$(eval POSTGRES_PASSWD := $(shell cat POSTGRES_PASSWD))
+	docker run \
+	--name=$(NAME)-postgresql \
+	-d \
+	--env='DB_NAME=redmine_production' \
+	--cidfile="postgresinitCID" \
+	--env='DB_USER=redmine' --env="DB_PASS=$(POSTGRES_PASSWD)" \
+	sameersbn/postgresql:9.4
 
 runredminit:
 	$(eval NAME := $(shell cat NAME))
@@ -36,21 +46,33 @@ runredminit:
 	--publish=$(PORT):80 \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
-	--cidfile="redmineCID" \
+	--cidfile="redmineinitCID" \
 	sameersbn/redmine
 
 #	sameersbn/redmine:2.6-latest
 # used to be last line above --> 	-t joshuacox/redminit
+#--publish=$(PORT):80 \
+
+runredis:
+	$(eval NAME := $(shell cat NAME))
+	docker run --name $(NAME)-redis \
+	-d \
+	--cidfile="redisCID" \
+	--volume=$(REDIS_DATADIR):/data \
+	redis \
+	redis-server --appendonly yes
 
 runpostgres:
 	$(eval NAME := $(shell cat NAME))
 	$(eval POSTGRES_PASSWD := $(shell cat POSTGRES_PASSWD))
-	docker run --name=$(NAME)-postgresql -d \
+	$(eval POSTGRES_DATADIR := $(shell cat POSTGRES_DATADIR))
+	docker run \
+	--name=$(NAME)-postgresql \
+	-d \
 	--env='DB_NAME=redmine_production' \
 	--cidfile="postgresCID" \
 	--env='DB_USER=redmine' --env="DB_PASS=$(POSTGRES_PASSWD)" \
-	--volume=/tmp:/tmp \
-	--volume=/srv/docker/redmine/postgresql:/var/lib/postgresql \
+	--volume=$(POSTGRES_DATADIR):/var/lib/postgresql \
 	sameersbn/postgresql:9.4
 
 builddocker:
@@ -61,44 +83,72 @@ kill:
 	-@docker kill `cat postgresCID`
 	-@docker kill `cat redisCID`
 
+killinit:
+	-@docker kill `cat redmineinitCID`
+	-@docker kill `cat postgresinitCID`
+	-@docker kill `cat redisinitCID`
+
 rm-name:
 	rm  name
+
+rm-redimage:
+	-@docker rm `cat redmineCID`
+
+rm-initimage:
+	-@docker rm `cat redmineinitCID`
+	-@docker rm `cat postgresinitCID`
+	-@docker rm `cat redisinitCID`
 
 rm-image:
 	-@docker rm `cat redmineCID`
 	-@docker rm `cat postgresCID`
 	-@docker rm `cat redisCID`
 
+rm-redcids:
+	-@rm redmineCID
+
+rm-initcids:
+	-@rm redmineinitCID
+	-@rm postgresinitCID
+	-@rm redisinitCID
+
 rm-cids:
 	-@rm redmineCID
 	-@rm postgresCID
 	-@rm redisCID
 
-rm: kill rm-image rm-cids
+rmall: kill rm-image rm-cids
+
+rm: kill rm-redimage rmredcids
+
+rminit: killinit rm-initimage rm-initcids
 
 clean: rm-name rm
 
+initenter:
+	docker exec -i -t `cat redmineinitCID` /bin/bash
+
 enter:
-	docker exec -i -t `cat redminitCID` /bin/bash
+	docker exec -i -t `cat redmineCID` /bin/bash
 
 pgenter:
 	docker exec -i -t `cat postgresCID` /bin/bash
 
-grab: grabredminedir grabpostgresdatadir gredredisdir
+grab: grabredminedir grabpostgresdatadir grabredisdatadir
 
 grabpostgresdatadir:
-	-mkdir -p datadir/postgresql
-	docker cp `cat postgresCID`:/var/lib/postgresql  - |sudo tar -C datadir/postgresql/ -pxvf -
+	-@mkdir -p datadir/postgresql
+	docker cp `cat postgresinitCID`:/var/lib/postgresql  - |sudo tar -C datadir/postgresql/ -pxf -
 	echo `pwd`/datadir/postgresql > POSTGRES_DATADIR
 
 grabredminedir:
-	-mkdir -p datadir/redmine
-	docker cp `cat cid`:/var/www/html  - |sudo tar -C datadir/redmine/ -pxvf -
+	-@mkdir -p datadir/redmine
+	docker cp `cat redmineinitCID`:/var/www/html  - |sudo tar -C datadir/redmine/ -pxf -
 	echo `pwd`/datadir/html > REDMINE_DATADIR
 
 grabredisdatadir:
-	-mkdir -p datadir/redis
-	docker cp `cat redistemp`:/data  - |sudo tar -C datadir/redis/ -pxvf -
+	-@mkdir -p datadir/redis
+	docker cp `cat redisinitCID`:/data  - |sudo tar -C datadir/redis/ -pxf -
 	echo `pwd`/datadir/redis > REDIS_DATADIR
 
 logs:
