@@ -13,13 +13,13 @@ build: builddocker
 
 init: POSTGRES_PASSWD NAME PORT rmall runpostgresinit runredisinit runredminit
 
-run: POSTGRES_PASSWD NAME PORT rm runpostgres runredis runredme
+run: POSTGRES_PASSWD NAME PORT rm runpostgres runredis runredmine
 
 runbuild: builddocker runpostgres runredis runredminit
 
 runredisinit:
 	$(eval NAME := $(shell cat NAME))
-	docker run --name $(NAME)-redis \
+	docker run --name $(NAME)-redis-init \
 	-d \
 	--cidfile="redisinitCID" \
 	redis \
@@ -29,7 +29,7 @@ runpostgresinit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval POSTGRES_PASSWD := $(shell cat POSTGRES_PASSWD))
 	docker run \
-	--name=$(NAME)-postgresql \
+	--name=$(NAME)-postgresql-init \
 	-d \
 	--env='DB_NAME=redmine_production' \
 	--cidfile="postgresinitCID" \
@@ -41,8 +41,8 @@ runredminit:
 	$(eval PORT := $(shell cat PORT))
 	docker run --name=$(NAME) \
 	-d \
-	--link=$(NAME)-postgresql:postgresql \
-	--link=$(NAME)-redis:redis \
+	--link=$(NAME)-postgresql-init:postgresql \
+	--link=$(NAME)-redis-init:redis \
 	--publish=$(PORT):80 \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
@@ -55,6 +55,7 @@ runredminit:
 
 runredis:
 	$(eval NAME := $(shell cat NAME))
+	$(eval REDIS_DATADIR := $(shell cat REDIS_DATADIR))
 	docker run --name $(NAME)-redis \
 	-d \
 	--cidfile="redisCID" \
@@ -74,6 +75,21 @@ runpostgres:
 	--env='DB_USER=redmine' --env="DB_PASS=$(POSTGRES_PASSWD)" \
 	--volume=$(POSTGRES_DATADIR):/var/lib/postgresql \
 	sameersbn/postgresql:9.4
+
+runredmine:
+	$(eval NAME := $(shell cat NAME))
+	$(eval PORT := $(shell cat PORT))
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	docker run --name=$(NAME) \
+	-d \
+	--link=$(NAME)-postgresql:postgresql \
+	--link=$(NAME)-redis:redis \
+	--publish=$(PORT):80 \
+	--env="REDMINE_PORT=$(PORT)" \
+	--env='REDIS_URL=redis://redis:6379/12' \
+	--volume=$(REDMINE_DATADIR):/data \
+	--cidfile="redmineCID" \
+	sameersbn/redmine
 
 builddocker:
 	/usr/bin/time -v docker build -t joshuacox/redminit .
@@ -119,7 +135,7 @@ rm-cids:
 
 rmall: kill rm-image rm-cids
 
-rm: kill rm-redimage rmredcids
+rm: kill rm-redimage rm-redcids
 
 rminit: killinit rm-initimage rm-initcids
 
@@ -153,6 +169,9 @@ grabredisdatadir:
 
 logs:
 	docker logs -f `cat redmineCID`
+
+initlogs:
+	docker logs -f `cat redmineinitCID`
 
 NAME:
 	@while [ -z "$$NAME" ]; do \
