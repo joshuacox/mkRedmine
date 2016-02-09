@@ -29,7 +29,7 @@ make run
 ```
 
 Notice that `make grab` creates a directory `datadir` that you should move wherever you like in your filesystem 
-, but if you do update the three `*DATADIR` files in this directory before you `make run`
+, but, if you do, update the three `*DATADIR` files in this directory before you `make run`
 
 ```
 grep datadir *DATADIR
