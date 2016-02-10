@@ -13,7 +13,7 @@ build: builddocker
 
 init: DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
-externinit: externaldbinfo DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit runredminit
+externinit: externaldbinfo DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
 externrun: DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredme
 
