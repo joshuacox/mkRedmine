@@ -209,7 +209,7 @@ grabpostgresdatadir:
 grabredminedir:
 	-@mkdir -p datadir/redmine
 	docker cp `cat redmineinitCID`:/var/www/html  - |sudo tar -C datadir/redmine/ -pxf -
-	echo `pwd`/datadir/html > REDMINE_DATADIR
+	echo `pwd`/datadir/redmine/html > REDMINE_DATADIR
 
 grabredisdatadir:
 	-@mkdir -p datadir/redis
