@@ -242,6 +242,11 @@ DB_NAME:
 		read -r -p "Enter the DB_NAME you wish to associate with this container [DB_NAME]: " DB_NAME; echo "$$DB_NAME">>DB_NAME; cat DB_NAME; \
 	done ;
 
+DB_HOST:
+	@while [ -z "$$DB_HOST" ]; do \
+		read -r -p "Enter the DB_HOST you wish to associate with this container [DB_HOST]: " DB_HOST; echo "$$DB_HOST">>DB_HOST; cat DB_HOST; \
+	done ;
+
 DB_USER:
 	@while [ -z "$$DB_USER" ]; do \
 		read -r -p "Enter the DB_USER you wish to associate with this container [DB_USER]: " DB_USER; echo "$$DB_USER">>DB_USER; cat DB_USER; \
