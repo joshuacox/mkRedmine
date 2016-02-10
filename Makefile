@@ -258,5 +258,5 @@ PORT:
 	done ;
 
 externaldbinfo:
-	echo "go here https://github.com/sameersbn/docker-redmine#postgresql to learn about the variable necessary to setup this instance"
+	-@echo "go here https://github.com/sameersbn/docker-redmine#postgresql to learn about the variable necessary to setup this instance"
 	-@sleep 5
