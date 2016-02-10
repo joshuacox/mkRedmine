@@ -15,7 +15,7 @@ init: DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
 externinit: externaldbinfo DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
-externrun: DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredme
+externrun: DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
 run: DB_PASS NAME PORT rm runpostgres runredis runredmine
 
