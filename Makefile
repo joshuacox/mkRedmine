@@ -11,13 +11,13 @@ help:
 
 build: builddocker
 
-init: DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+init: SMTP_PASS SMTP_USER DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
-externinit: externaldbinfo DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
+externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
-externrun: DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
+externrun: SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
-run: DB_PASS NAME PORT rm runpostgres runredis runredmine
+run: SMTP_PASS SMTP_USER DB_PASS NAME PORT rm runpostgres runredis runredmine
 
 runbuild: builddocker runpostgres runredis runredminit
 
@@ -46,6 +46,8 @@ externrunredminit:
 	$(eval DB_NAME := $(shell cat DB_NAME))
 	$(eval DB_HOST := $(shell cat DB_HOST))
 	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	$(eval DB_ADAPTER := $(shell cat DB_ADAPTER))
 	$(eval DB_PASS := $(shell cat DB_PASS))
 	docker run --name=$(NAME) \
@@ -57,6 +59,8 @@ externrunredminit:
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_HOST=$(DB_HOST)" \
 	--env="DB_USER=$(DB_USER)" \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
 	--cidfile="redmineinitCID" \
@@ -65,12 +69,16 @@ externrunredminit:
 runredminit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval PORT := $(shell cat PORT))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-postgresql-init:postgresql \
 	--link=$(NAME)-redis-init:redis \
 	--publish=$(PORT):80 \
 	--env="REDMINE_PORT=$(PORT)" \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--cidfile="redmineinitCID" \
 	sameersbn/redmine
@@ -111,6 +119,8 @@ externrunredmine:
 	$(eval DB_USER := $(shell cat DB_USER))
 	$(eval DB_ADAPTER := $(shell cat DB_ADAPTER))
 	$(eval DB_PASS := $(shell cat DB_PASS))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-redis:redis \
@@ -118,6 +128,8 @@ externrunredmine:
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_HOST=$(DB_HOST)" \
 	--env="DB_USER=$(DB_USER)" \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
 	--env="REDMINE_PORT=$(PORT)" \
@@ -130,6 +142,8 @@ runredmine:
 	$(eval NAME := $(shell cat NAME))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-postgresql:postgresql \
@@ -250,6 +264,16 @@ DB_HOST:
 DB_USER:
 	@while [ -z "$$DB_USER" ]; do \
 		read -r -p "Enter the DB_USER you wish to associate with this container [DB_USER]: " DB_USER; echo "$$DB_USER">>DB_USER; cat DB_USER; \
+	done ;
+
+SMTP_PASS:
+	@while [ -z "$$SMTP_PASS" ]; do \
+		read -r -p "Enter the SMTP_PASS you wish to associate with this container [SMTP_PASS]: " SMTP_PASS; echo "$$SMTP_PASS">>SMTP_PASS; cat SMTP_PASS; \
+	done ;
+
+SMTP_USER:
+	@while [ -z "$$SMTP_USER" ]; do \
+		read -r -p "Enter the SMTP_USER you wish to associate with this container [SMTP_USER]: " SMTP_USER; echo "$$SMTP_USER">>SMTP_USER; cat SMTP_USER; \
 	done ;
 
 PORT:
