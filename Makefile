@@ -11,9 +11,13 @@ help:
 
 build: builddocker
 
-init: POSTGRES_PASSWD NAME PORT rmall runpostgresinit runredisinit runredminit
+init: DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
-run: POSTGRES_PASSWD NAME PORT rm runpostgres runredis runredmine
+externinit: externaldbinfo DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit runredminit
+
+externrun: DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredme
+
+run: DB_PASS NAME PORT rm runpostgres runredis runredmine
 
 runbuild: builddocker runpostgres runredis runredminit
 
@@ -27,14 +31,36 @@ runredisinit:
 
 runpostgresinit:
 	$(eval NAME := $(shell cat NAME))
-	$(eval POSTGRES_PASSWD := $(shell cat POSTGRES_PASSWD))
+	$(eval DB_PASS := $(shell cat DB_PASS))
 	docker run \
 	--name=$(NAME)-postgresql-init \
 	-d \
 	--env='DB_NAME=redmine_production' \
 	--cidfile="postgresinitCID" \
-	--env='DB_USER=redmine' --env="DB_PASS=$(POSTGRES_PASSWD)" \
+	--env='DB_USER=redmine' --env="DB_PASS=$(DB_PASS)" \
 	sameersbn/postgresql:9.4
+
+externrunredminit:
+	$(eval NAME := $(shell cat NAME))
+	$(eval PORT := $(shell cat PORT))
+	$(eval DB_NAME := $(shell cat DB_NAME))
+	$(eval DB_HOST := $(shell cat DB_HOST))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_ADAPTER := $(shell cat DB_ADAPTER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
+	docker run --name=$(NAME) \
+	-d \
+	--publish=$(PORT):80 \
+	--link=$(NAME)-redis-init:redis \
+	--env="REDMINE_PORT=$(PORT)" \
+	--env='REDIS_URL=redis://redis:6379/12' \
+	--env="DB_NAME=$(DB_NAME)" \
+	--env="DB_HOST=$(DB_HOST)" \
+	--env="DB_USER=$(DB_USER)" \
+	--env="DB_ADAPTER=$(DB_ADAPTER)" \
+	--env="DB_PASS=$(DB_PASS)" \
+	--cidfile="redmineinitCID" \
+	sameersbn/redmine
 
 runredminit:
 	$(eval NAME := $(shell cat NAME))
@@ -65,16 +91,40 @@ runredis:
 
 runpostgres:
 	$(eval NAME := $(shell cat NAME))
-	$(eval POSTGRES_PASSWD := $(shell cat POSTGRES_PASSWD))
+	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval POSTGRES_DATADIR := $(shell cat POSTGRES_DATADIR))
 	docker run \
 	--name=$(NAME)-postgresql \
 	-d \
 	--env='DB_NAME=redmine_production' \
 	--cidfile="postgresCID" \
-	--env='DB_USER=redmine' --env="DB_PASS=$(POSTGRES_PASSWD)" \
+	--env='DB_USER=redmine' --env="DB_PASS=$(DB_PASS)" \
 	--volume=$(POSTGRES_DATADIR):/var/lib/postgresql \
 	sameersbn/postgresql:9.4
+
+externrunredmine:
+	$(eval NAME := $(shell cat NAME))
+	$(eval PORT := $(shell cat PORT))
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	$(eval DB_NAME := $(shell cat DB_NAME))
+	$(eval DB_HOST := $(shell cat DB_HOST))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_ADAPTER := $(shell cat DB_ADAPTER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
+	docker run --name=$(NAME) \
+	-d \
+	--link=$(NAME)-redis:redis \
+	--publish=$(PORT):80 \
+	--env="DB_NAME=$(DB_NAME)" \
+	--env="DB_HOST=$(DB_HOST)" \
+	--env="DB_USER=$(DB_USER)" \
+	--env="DB_ADAPTER=$(DB_ADAPTER)" \
+	--env="DB_PASS=$(DB_PASS)" \
+	--env="REDMINE_PORT=$(PORT)" \
+	--env='REDIS_URL=redis://redis:6379/12' \
+	--volume=$(REDMINE_DATADIR):/data \
+	--cidfile="redmineCID" \
+	sameersbn/redmine
 
 runredmine:
 	$(eval NAME := $(shell cat NAME))
@@ -103,9 +153,6 @@ killinit:
 	-@docker kill `cat redmineinitCID`
 	-@docker kill `cat postgresinitCID`
 	-@docker kill `cat redisinitCID`
-
-rm-name:
-	rm  name
 
 rm-redimage:
 	-@docker rm `cat redmineCID`
@@ -139,7 +186,7 @@ rm: kill rm-redimage rm-redcids
 
 rminit: killinit rm-initimage rm-initcids
 
-clean: rm-name rm
+clean:  rm
 
 initenter:
 	docker exec -i -t `cat redmineinitCID` /bin/bash
@@ -151,6 +198,8 @@ pgenter:
 	docker exec -i -t `cat postgresCID` /bin/bash
 
 grab: grabredminedir grabpostgresdatadir grabredisdatadir
+
+externgrab: grabredminedir grabredisdatadir
 
 grabpostgresdatadir:
 	-@mkdir -p datadir/postgresql
@@ -178,12 +227,31 @@ NAME:
 		read -r -p "Enter the name you wish to associate with this container [NAME]: " NAME; echo "$$NAME">>NAME; cat NAME; \
 	done ;
 
-POSTGRES_PASSWD:
-	@while [ -z "$$POSTGRES_PASSWD" ]; do \
-		read -r -p "Enter the postgres pass you wish to associate with this container [POSTGRES_PASSWD]: " POSTGRES_PASSWD; echo "$$POSTGRES_PASSWD">>POSTGRES_PASSWD; cat POSTGRES_PASSWD; \
+DB_ADAPTER:
+	@while [ -z "$$DB_ADAPTER" ]; do \
+		read -r -p "Enter the DB_ADAPTER you wish to associate with this container [DB_ADAPTER]: " DB_ADAPTER; echo "$$DB_ADAPTER">>DB_ADAPTER; cat DB_ADAPTER; \
+	done ;
+
+DB_PASS:
+	@while [ -z "$$DB_PASS" ]; do \
+		read -r -p "Enter the DB_PASS you wish to associate with this container [DB_PASS]: " DB_PASS; echo "$$DB_PASS">>DB_PASS; cat DB_PASS; \
+	done ;
+
+DB_NAME:
+	@while [ -z "$$DB_NAME" ]; do \
+		read -r -p "Enter the DB_NAME you wish to associate with this container [DB_NAME]: " DB_NAME; echo "$$DB_NAME">>DB_NAME; cat DB_NAME; \
+	done ;
+
+DB_USER:
+	@while [ -z "$$DB_USER" ]; do \
+		read -r -p "Enter the DB_USER you wish to associate with this container [DB_USER]: " DB_USER; echo "$$DB_USER">>DB_USER; cat DB_USER; \
 	done ;
 
 PORT:
 	@while [ -z "$$PORT" ]; do \
 		read -r -p "Enter the port you wish to associate with this container [PORT]: " PORT; echo "$$PORT">>PORT; cat PORT; \
 	done ;
+
+externaldbinfo:
+	echo "go here https://github.com/sameersbn/docker-redmine#postgresql to learn about the variable necessary to setup this instance"
+	-@sleep 5

@@ -38,4 +38,30 @@ REDIS_DATADIR:/home/thoth/git/mkRedmine/datadir/redis
 REDMINE_DATADIR:/home/thoth/git/mkRedmine/datadir/html
 ```
 
+### External DB
 
+https://github.com/sameersbn/docker-redmine#postgresql to learn about the variable necessary to setup this instance
+
+You should be able to make the container use an external database in this fashion:
+
+```
+make externinit
+```
+
+Now `grab` the datadirectories for peristence
+
+```
+make externgrab
+```
+
+You can now kill the init instances
+
+```
+make rminit
+```
+
+And finally run the persistent instances using the data dirs defined
+
+```
+make externrun
+```
