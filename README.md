@@ -38,7 +38,7 @@ REDIS_DATADIR:/home/thoth/git/mkRedmine/datadir/redis
 REDMINE_DATADIR:/home/thoth/git/mkRedmine/datadir/html
 ```
 
-### External DB
+###ExternalDB
 
 https://github.com/sameersbn/docker-redmine#postgresql to learn about the variable necessary to setup this instance
 
