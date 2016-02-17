@@ -149,6 +149,8 @@ runredmine:
 	--link=$(NAME)-postgresql:postgresql \
 	--link=$(NAME)-redis:redis \
 	--publish=$(PORT):80 \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/data \
