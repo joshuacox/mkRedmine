@@ -134,7 +134,7 @@ externrunredmine:
 	--env="DB_PASS=$(DB_PASS)" \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
-	--volume=$(REDMINE_DATADIR):/data \
+	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
 	sameersbn/redmine
 
@@ -153,7 +153,7 @@ runredmine:
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
-	--volume=$(REDMINE_DATADIR):/data \
+	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
 	sameersbn/redmine
 
