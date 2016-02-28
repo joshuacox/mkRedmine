@@ -11,13 +11,17 @@ help:
 
 build: builddocker
 
-init: SMTP_PASS SMTP_USER DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+init: SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+
+mysqlinit: SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
+
+mysqlrun: SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
 
 externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
 externrun: SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
-run: SMTP_PASS SMTP_USER DB_PASS NAME PORT rm runpostgres runredis runredmine
+run: SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rm runpostgres runredis runredmine
 
 runbuild: builddocker runpostgres runredis runredminit
 
@@ -37,8 +41,21 @@ runpostgresinit:
 	-d \
 	--env='DB_NAME=redmine_production' \
 	--cidfile="postgresinitCID" \
-	--env='DB_USER=redmine' --env="DB_PASS=$(DB_PASS)" \
+	--env='DB_USER=$(DB_USER)' --env="DB_PASS=$(DB_PASS)" \
 	sameersbn/postgresql:9.4
+
+runmysqlinit:
+	$(eval NAME := $(shell cat NAME))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
+	docker run \
+	--name=$(NAME)-mysql-init \
+	-d \
+	--env='DB_NAME=redmine_production' \
+	--cidfile="mysqlinitCID" \
+	--env='MYSQL_USER=$(DB_USER)' --env="MYSQL_ROOT_PASSWORD=$(DB_PASS)" \
+	--env="MYSQL_PASSWORD=$(DB_PASS)" \
+	mysql:5.6
 
 externrunredminit:
 	$(eval NAME := $(shell cat NAME))
@@ -83,6 +100,21 @@ runredminit:
 	--cidfile="redmineinitCID" \
 	sameersbn/redmine
 
+mysqlrunredminit:
+	$(eval NAME := $(shell cat NAME))
+	$(eval PORT := $(shell cat PORT))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
+	docker run --name=$(NAME) \
+	-d \
+	--link=$(NAME)-mysql-init:mysql \
+	--publish=$(PORT):80 \
+	--env="REDMINE_PORT=$(PORT)" \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
+	--cidfile="redmineinitCID" \
+	sameersbn/redmine
+
 #	sameersbn/redmine:2.6-latest
 # used to be last line above --> 	-t joshuacox/redminit
 #--publish=$(PORT):80 \
@@ -99,16 +131,34 @@ runredis:
 
 runpostgres:
 	$(eval NAME := $(shell cat NAME))
+	$(eval DB_USER := $(shell cat DB_USER))
 	$(eval DB_PASS := $(shell cat DB_PASS))
+	$(eval DB_NAME := $(shell cat DB_NAME))
 	$(eval POSTGRES_DATADIR := $(shell cat POSTGRES_DATADIR))
 	docker run \
 	--name=$(NAME)-postgresql \
 	-d \
-	--env='DB_NAME=redmine_production' \
+	--env='DB_NAME=$(DB_NAME)' \
 	--cidfile="postgresCID" \
-	--env='DB_USER=redmine' --env="DB_PASS=$(DB_PASS)" \
+	--env='DB_USER=$(DB_USER)' --env="DB_PASS=$(DB_PASS)" \
 	--volume=$(POSTGRES_DATADIR):/var/lib/postgresql \
 	sameersbn/postgresql:9.4
+
+runmysql:
+	$(eval NAME := $(shell cat NAME))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
+	$(eval DB_NAME := $(shell cat DB_NAME))
+	$(eval MYSQL_DATADIR := $(shell cat MYSQL_DATADIR))
+	docker run \
+	--name=$(NAME)-mysql \
+	-d \
+	--env='DB_NAME=$(DB_NAME)' \
+	--cidfile="mysqlCID" \
+	--env='MYSQL_USER=$(DB_USER)' --env="MYSQL_ROOT_PASSWORD=$(DB_PASS)" \
+	--env="MYSQL_PASSWORD=$(DB_PASS)" \
+	--volume=$(MYSQL_DATADIR):/var/lib/mysql \
+	mysql:5.6
 
 externrunredmine:
 	$(eval NAME := $(shell cat NAME))
@@ -157,16 +207,36 @@ runredmine:
 	--cidfile="redmineCID" \
 	sameersbn/redmine
 
+mysqlrunredmine:
+	$(eval NAME := $(shell cat NAME))
+	$(eval PORT := $(shell cat PORT))
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
+	docker run --name=$(NAME) \
+	-d \
+	--link=$(NAME)-mysql:mysql \
+	--publish=$(PORT):80 \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
+	--env="REDMINE_PORT=$(PORT)" \
+	--env='REDIS_URL=redis://redis:6379/12' \
+	--volume=$(REDMINE_DATADIR):/home/redmine/data \
+	--cidfile="redmineCID" \
+	sameersbn/redmine
+
 builddocker:
 	/usr/bin/time -v docker build -t joshuacox/redminit .
 
 kill:
 	-@docker kill `cat redmineCID`
+	-@docker kill `cat mysqlCID`
 	-@docker kill `cat postgresCID`
 	-@docker kill `cat redisCID`
 
 killinit:
 	-@docker kill `cat redmineinitCID`
+	-@docker kill `cat mysqlinitCID`
 	-@docker kill `cat postgresinitCID`
 	-@docker kill `cat redisinitCID`
 
@@ -175,11 +245,13 @@ rm-redimage:
 
 rm-initimage:
 	-@docker rm `cat redmineinitCID`
+	-@docker rm `cat mysqlinitCID`
 	-@docker rm `cat postgresinitCID`
 	-@docker rm `cat redisinitCID`
 
 rm-image:
 	-@docker rm `cat redmineCID`
+	-@docker rm `cat mysqlCID`
 	-@docker rm `cat postgresCID`
 	-@docker rm `cat redisCID`
 
@@ -188,11 +260,13 @@ rm-redcids:
 
 rm-initcids:
 	-@rm redmineinitCID
+	-@rm mysqlinitCID
 	-@rm postgresinitCID
 	-@rm redisinitCID
 
 rm-cids:
 	-@rm redmineCID
+	-@rm mysqlCID
 	-@rm postgresCID
 	-@rm redisCID
 
@@ -215,12 +289,19 @@ pgenter:
 
 grab: grabredminedir grabpostgresdatadir grabredisdatadir
 
+mysqlgrab: grabredminedir grabmysqldatadir
+
 externgrab: grabredminedir grabredisdatadir
 
 grabpostgresdatadir:
 	-@mkdir -p datadir/postgresql
 	docker cp `cat postgresinitCID`:/var/lib/postgresql  - |sudo tar -C datadir/postgresql/ -pxf -
 	echo `pwd`/datadir/postgresql > POSTGRES_DATADIR
+
+grabmysqldatadir:
+	-@mkdir -p datadir/mysql
+	docker cp `cat mysqlinitCID`:/var/lib/mysql  - |sudo tar -C datadir/mysql/ -pxf -
+	echo `pwd`/datadir/mysql > MYSQL_DATADIR
 
 grabredminedir:
 	-@mkdir -p datadir/redmine
