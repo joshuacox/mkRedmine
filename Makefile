@@ -303,7 +303,7 @@ grabpostgresdatadir:
 
 grabmysqldatadir:
 	-@mkdir -p datadir/mysql
-	docker cp `cat mysqlinitCID`:/var/lib/mysql  - |sudo tar -C datadir/mysql/ -pxf -
+	docker cp `cat mysqlinitCID`:/var/lib/mysql  - |sudo tar -C datadir/ -pxf -
 	echo `pwd`/datadir/mysql > MYSQL_DATADIR
 
 grabredminedir:
