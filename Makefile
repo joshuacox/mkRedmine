@@ -19,7 +19,7 @@ mysqlinit: SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqli
 
 mysqlrun: SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
 
-linkedmysqlrun: SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm  mysqlrunredmine
+linkedmysqlrun: SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
 
 externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
@@ -228,6 +228,33 @@ mysqlrunredmine:
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
+	--volume=$(REDMINE_DATADIR):/home/redmine/data \
+	--cidfile="redmineCID" \
+	sameersbn/redmine
+
+linkedmysqlrunredmine:
+	$(eval NAME := $(shell cat NAME))
+	$(eval PORT := $(shell cat PORT))
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
+	$(eval SMTP_USER := $(shell cat SMTP_USER))
+	$(eval DB_NAME := $(shell cat DB_NAME))
+	$(eval DB_HOST := $(shell cat DB_HOST))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_ADAPTER := $(shell cat DB_ADAPTER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
+	docker run --name=$(NAME) \
+	-d \
+	--link=$(NAME)-mysql:mysql \
+	--env="DB_NAME=$(DB_NAME)" \
+	--env="DB_HOST=$(DB_HOST)" \
+	--env="DB_USER=$(DB_USER)" \
+	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env="SMTP_USER=$(SMTP_USER)" \
+	--env="DB_ADAPTER=$(DB_ADAPTER)" \
+	--env="DB_PASS=$(DB_PASS)" \
+	--env="REDMINE_PORT=$(PORT)" \
+	--publish=$(PORT):80 \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
 	sameersbn/redmine
