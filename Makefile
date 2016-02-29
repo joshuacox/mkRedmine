@@ -11,11 +11,15 @@ help:
 
 build: builddocker
 
+link: linkedmysqlrun
+
 init: SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
 mysqlinit: SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
 
 mysqlrun: SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
+
+linkedmysqlrun: SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm  mysqlrunredmine
 
 externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
