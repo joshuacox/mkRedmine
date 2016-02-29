@@ -36,10 +36,11 @@ runredisinit:
 runpostgresinit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval DB_PASS := $(shell cat DB_PASS))
+	$(eval DB_NAME := $(shell cat DB_NAME))
 	docker run \
 	--name=$(NAME)-postgresql-init \
 	-d \
-	--env='DB_NAME=redmine_production' \
+	--env='DB_NAME=$(DB_NAME)' \
 	--cidfile="postgresinitCID" \
 	--env='DB_USER=$(DB_USER)' --env="DB_PASS=$(DB_PASS)" \
 	sameersbn/postgresql:9.4
@@ -48,13 +49,15 @@ runmysqlinit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval DB_USER := $(shell cat DB_USER))
 	$(eval DB_PASS := $(shell cat DB_PASS))
+	$(eval DB_NAME := $(shell cat DB_NAME))
 	docker run \
 	--name=$(NAME)-mysql-init \
 	-d \
-	--env='DB_NAME=redmine_production' \
+	--env='DB_NAME=$(DB_NAME)' \
 	--cidfile="mysqlinitCID" \
 	--env='MYSQL_USER=$(DB_USER)' --env="MYSQL_ROOT_PASSWORD=$(DB_PASS)" \
 	--env="MYSQL_PASSWORD=$(DB_PASS)" \
+	--env="MYSQL_DATABASE=$(DB_NAME)" \
 	mysql:5.6
 
 externrunredminit:
