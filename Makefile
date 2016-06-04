@@ -93,6 +93,9 @@ externrunredminit:
 runredminit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval PORT := $(shell cat PORT))
+	$(eval DB_NAME := $(shell cat DB_NAME))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	docker run --name=$(NAME) \
@@ -100,6 +103,9 @@ runredminit:
 	--link=$(NAME)-postgresql-init:postgresql \
 	--link=$(NAME)-redis-init:redis \
 	--publish=$(PORT):80 \
+	--env="DB_NAME=$(DB_NAME)" \
+	--env="DB_USER=$(DB_USER)" \
+	--env="DB_PASS=$(DB_PASS)" \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
