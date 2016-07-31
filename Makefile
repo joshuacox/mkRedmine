@@ -220,6 +220,9 @@ runredmine:
 	$(eval NAME := $(shell cat NAME))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	$(eval DB_NAME := $(shell cat DB_NAME))
+	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	docker run --name=$(NAME) \
@@ -227,6 +230,9 @@ runredmine:
 	--link=$(NAME)-postgresql:postgresql \
 	--link=$(NAME)-redis:redis \
 	--publish=$(PORT):80 \
+	--env="DB_NAME=$(DB_NAME)" \
+	--env="DB_USER=$(DB_USER)" \
+	--env="DB_PASS=$(DB_PASS)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
