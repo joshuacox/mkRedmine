@@ -13,7 +13,7 @@ build: builddocker
 
 link: linkedmysqlrun
 
-init: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+init: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
 mysqlinit: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
 
