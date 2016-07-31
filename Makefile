@@ -169,7 +169,7 @@ runpostgres:
 	--env='DB_NAME=$(DB_NAME)' \
 	--cidfile="postgresCID" \
 	--env='DB_USER=$(DB_USER)' --env="DB_PASS=$(DB_PASS)" \
-	--volume=$(POSTGRES_DATADIR):/var/lib/ \
+	--volume=$(POSTGRES_DATADIR):/var/lib/postgresql/ \
 	sameersbn/postgresql:9.4
 
 runmysql:
@@ -356,7 +356,7 @@ externgrab: grabredminedir grabredisdatadir
 
 grabpostgresdatadir:
 	-@mkdir -p datadir/postgresql
-	docker cp `cat postgresinitCID`:/var/lib/postgresql  - |sudo tar -C datadir/postgresql/ -pxf -
+	docker cp `cat postgresinitCID`:/var/lib/postgresql  - |sudo tar -C datadir -pxf -
 	echo `pwd`/datadir/postgresql > POSTGRES_DATADIR
 
 grabmysqldatadir:
