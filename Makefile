@@ -70,6 +70,8 @@ externrunredminit:
 	$(eval DB_NAME := $(shell cat DB_NAME))
 	$(eval DB_HOST := $(shell cat DB_HOST))
 	$(eval DB_USER := $(shell cat DB_USER))
+	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
+	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	$(eval DB_ADAPTER := $(shell cat DB_ADAPTER))
@@ -83,6 +85,8 @@ externrunredminit:
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_HOST=$(DB_HOST)" \
 	--env="DB_USER=$(DB_USER)" \
+	--env="SMTP_PORT=$(SMTP_PORT)" \
+	--env="SMTP_HOST=$(SMTP_HOST)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
@@ -96,6 +100,8 @@ runredminit:
 	$(eval DB_NAME := $(shell cat DB_NAME))
 	$(eval DB_USER := $(shell cat DB_USER))
 	$(eval DB_PASS := $(shell cat DB_PASS))
+	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
+	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	docker run --name=$(NAME) \
@@ -107,6 +113,8 @@ runredminit:
 	--env="DB_USER=$(DB_USER)" \
 	--env="DB_PASS=$(DB_PASS)" \
 	--env="REDMINE_PORT=$(PORT)" \
+	--env="SMTP_PORT=$(SMTP_PORT)" \
+	--env="SMTP_HOST=$(SMTP_HOST)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
@@ -118,11 +126,15 @@ mysqlrunredminit:
 	$(eval PORT := $(shell cat PORT))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
+	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
+	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-mysql-init:mysql \
 	--publish=$(PORT):80 \
 	--env="REDMINE_PORT=$(PORT)" \
+	--env="SMTP_PORT=$(SMTP_PORT)" \
+	--env="SMTP_HOST=$(SMTP_HOST)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--cidfile="redmineinitCID" \
