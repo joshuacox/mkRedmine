@@ -169,7 +169,7 @@ runpostgres:
 	--env='DB_NAME=$(DB_NAME)' \
 	--cidfile="postgresCID" \
 	--env='DB_USER=$(DB_USER)' --env="DB_PASS=$(DB_PASS)" \
-	--volume=$(POSTGRES_DATADIR):/var/lib/postgresql \
+	--volume=$(POSTGRES_DATADIR):/var/lib/ \
 	sameersbn/postgresql:9.4
 
 runmysql:
