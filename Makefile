@@ -41,6 +41,7 @@ runpostgresinit: postgresinitCID
 
 postgresinitCID:
 	$(eval NAME := $(shell cat NAME))
+	$(eval DB_USER := $(shell cat DB_USER))
 	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval DB_NAME := $(shell cat DB_NAME))
 	docker run \
