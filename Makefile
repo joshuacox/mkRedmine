@@ -13,19 +13,19 @@ build: builddocker
 
 link: linkedmysqlrun
 
-init: SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+init: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
-mysqlinit: SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
+mysqlinit: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
 
-mysqlrun: SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
+mysqlrun: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
 
-linkedmysqlrun: SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
+linkedmysqlrun: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
 
 externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
-externrun: SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
+externrun: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
-run: SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rm runpostgres runredis runredmine
+run: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rm runpostgres runredis runredmine
 
 runbuild: builddocker runpostgres runredis runredminit
 
