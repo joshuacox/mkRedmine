@@ -389,6 +389,16 @@ DB_USER:
 		read -r -p "Enter the DB_USER you wish to associate with this container [DB_USER]: " DB_USER; echo "$$DB_USER">>DB_USER; cat DB_USER; \
 	done ;
 
+SMTP_PORT:
+	@while [ -z "$$SMTP_PORT" ]; do \
+		read -r -p "Enter the SMTP_PORT you wish to associate with this container [SMTP_PORT]: " SMTP_PORT; echo "$$SMTP_PORT">>SMTP_PORT; cat SMTP_PORT; \
+	done ;
+
+SMTP_HOST:
+	@while [ -z "$$SMTP_HOST" ]; do \
+		read -r -p "Enter the SMTP_HOST you wish to associate with this container [SMTP_HOST]: " SMTP_HOST; echo "$$SMTP_HOST">>SMTP_HOST; cat SMTP_HOST; \
+	done ;
+
 SMTP_PASS:
 	@while [ -z "$$SMTP_PASS" ]; do \
 		read -r -p "Enter the SMTP_PASS you wish to associate with this container [SMTP_PASS]: " SMTP_PASS; echo "$$SMTP_PASS">>SMTP_PASS; cat SMTP_PASS; \
