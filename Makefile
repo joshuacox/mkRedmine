@@ -37,7 +37,9 @@ runredisinit:
 	redis \
 	redis-server --appendonly yes
 
-runpostgresinit:
+runpostgresinit: postgresinitCID
+
+postgresinitCID:
 	$(eval NAME := $(shell cat NAME))
 	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval DB_NAME := $(shell cat DB_NAME))
