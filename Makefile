@@ -68,6 +68,7 @@ runmysqlinit:
 	mysql:5.6
 
 externrunredminit:
+	$(eval TAG := $(shell cat TAG))
 	$(eval NAME := $(shell cat NAME))
 	$(eval PORT := $(shell cat PORT))
 	$(eval DB_NAME := $(shell cat DB_NAME))
@@ -95,10 +96,11 @@ externrunredminit:
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
 	--cidfile="redmineinitCID" \
-	sameersbn/redmine
+	$(TAG)
 
 runredminit:
 	$(eval NAME := $(shell cat NAME))
+	$(eval TAG := $(shell cat TAG))
 	$(eval PORT := $(shell cat PORT))
 	$(eval DB_NAME := $(shell cat DB_NAME))
 	$(eval DB_USER := $(shell cat DB_USER))
@@ -122,10 +124,11 @@ runredminit:
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--cidfile="redmineinitCID" \
-	sameersbn/redmine
+	$(TAG)
 
 mysqlrunredminit:
 	$(eval NAME := $(shell cat NAME))
+	$(eval TAG := $(shell cat TAG))
 	$(eval PORT := $(shell cat PORT))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
@@ -141,7 +144,7 @@ mysqlrunredminit:
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--cidfile="redmineinitCID" \
-	sameersbn/redmine
+	$(TAG)
 
 #	sameersbn/redmine:2.6-latest
 # used to be last line above --> 	-t joshuacox/redminit
@@ -190,6 +193,7 @@ runmysql:
 
 externrunredmine:
 	$(eval NAME := $(shell cat NAME))
+	$(eval TAG := $(shell cat TAG))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	$(eval DB_NAME := $(shell cat DB_NAME))
@@ -220,10 +224,11 @@ externrunredmine:
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
-	sameersbn/redmine
+	$(TAG)
 
 runredmine:
 	$(eval NAME := $(shell cat NAME))
+	$(eval TAG := $(shell cat TAG))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	$(eval DB_NAME := $(shell cat DB_NAME))
@@ -253,7 +258,7 @@ runredmine:
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
-	sameersbn/redmine
+	$(TAG)
 
 mysqlrunredmine:
 	$(eval NAME := $(shell cat NAME))
@@ -271,10 +276,11 @@ mysqlrunredmine:
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
-	sameersbn/redmine
+	$(TAG)
 
 linkedmysqlrunredmine:
 	$(eval NAME := $(shell cat NAME))
+	$(eval TAG := $(shell cat TAG))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
@@ -298,7 +304,7 @@ linkedmysqlrunredmine:
 	--publish=$(PORT):80 \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
-	sameersbn/redmine
+	$(TAG)
 
 builddocker:
 	/usr/bin/time -v docker build -t joshuacox/redminit .
