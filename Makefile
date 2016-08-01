@@ -451,3 +451,10 @@ emailRakeTask:
 
 checkEmail: emailRakeTask executeEmailRakeTask
 
+backlogs:
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	cd $(REDMINE_DATADIR)/plugins ; \
+	git clone https://github.com/backlogs/redmine_backlogs.git 
+	cd $(REDMINE_DATADIR)/plugins/redmine_backlogs ; \
+	git checkout feature/redmine3 
+
