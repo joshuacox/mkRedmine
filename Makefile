@@ -25,7 +25,7 @@ externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_US
 
 externrun: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
-run: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
+run: SMTP_DOMAIN SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
 
 runbuild: builddocker runpostgres runredis runredminit
 
@@ -199,6 +199,9 @@ externrunredmine:
 	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
+	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
+	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
+	$(eval SMTP_DOMAIN := $(shell cat SMTP_DOMAIN))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-redis:redis \
@@ -208,6 +211,9 @@ externrunredmine:
 	--env="DB_USER=$(DB_USER)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
+	--env="SMTP_PORT=$(SMTP_PORT)" \
+	--env="SMTP_HOST=$(SMTP_HOST)" \
+	--env="SMTP_DOMAIN=$(SMTP_DOMAIN)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
 	--env="REDMINE_PORT=$(PORT)" \
@@ -227,6 +233,7 @@ runredmine:
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
 	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
+	$(eval SMTP_DOMAIN := $(shell cat SMTP_DOMAIN))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-postgresql:postgresql \
@@ -237,6 +244,7 @@ runredmine:
 	--env="DB_PASS=$(DB_PASS)" \
 	--env="SMTP_PORT=$(SMTP_PORT)" \
 	--env="SMTP_HOST=$(SMTP_HOST)" \
+	--env="SMTP_DOMAIN=$(SMTP_DOMAIN)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
@@ -417,6 +425,11 @@ DB_USER:
 SMTP_PORT:
 	@while [ -z "$$SMTP_PORT" ]; do \
 		read -r -p "Enter the SMTP_PORT you wish to associate with this container [SMTP_PORT]: " SMTP_PORT; echo "$$SMTP_PORT">>SMTP_PORT; cat SMTP_PORT; \
+	done ;
+
+SMTP_DOMAIN:
+	@while [ -z "$$SMTP_DOMAIN" ]; do \
+		read -r -p "Enter the SMTP_DOMAIN you wish to associate with this container [SMTP_DOMAIN]: " SMTP_DOMAIN; echo "$$SMTP_DOMAIN">>SMTP_DOMAIN; cat SMTP_DOMAIN; \
 	done ;
 
 SMTP_HOST:
