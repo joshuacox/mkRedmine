@@ -470,7 +470,9 @@ emailRakeTask:
 	$(eval NAME := $(shell cat NAME))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
-	echo "docker exec -it $(NAME) sudo -u redmine -H bundle exec rake redmine:email:receive_imap RAILS_ENV="production" host=imap.gmail.com port=993 ssl=true username=$(SMTP_USER) password=$(SMTP_PASS)  folder=Inbox move_on_success=SUCCESS move_on_failure=failed project=contact tracker=support allow_override=priority,tracker,project no_permission_check=1 no_account_notice=1">emailRakeTask
+	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
+	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
+	echo "docker exec -it $(NAME) sudo -u redmine -H bundle exec rake redmine:email:receive_imap RAILS_ENV="production" host=$(SMTP_HOST) port=$(SMTP_PORT) ssl=true username=$(SMTP_USER) password=$(SMTP_PASS)  folder=Inbox move_on_success=SUCCESS move_on_failure=failed project=contact tracker=support allow_override=priority,tracker,project no_permission_check=1 no_account_notice=1">emailRakeTask
 	chmod +x emailRakeTask
 
 checkEmail: emailRakeTask executeEmailRakeTask
