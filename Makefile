@@ -233,6 +233,8 @@ runredmine:
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_USER=$(DB_USER)" \
 	--env="DB_PASS=$(DB_PASS)" \
+	--env="SMTP_PORT=$(SMTP_PORT)" \
+	--env="SMTP_HOST=$(SMTP_HOST)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
