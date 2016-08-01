@@ -495,6 +495,7 @@ backlogs:
 	cd $(REDMINE_DATADIR)/plugins/redmine_backlogs ; \
 	git checkout feature/redmine3 ; \
 	sed -i 's/gem "nokogiri"/#gem "nokogiri"/' Gemfile
+	sed -i 's/gem "capybara"/#gem "capybara"/' Gemfile
 
 example:
 	cp -i TAG.example TAG
