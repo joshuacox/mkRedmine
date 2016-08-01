@@ -225,6 +225,8 @@ runredmine:
 	$(eval DB_PASS := $(shell cat DB_PASS))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
+	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
+	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-postgresql:postgresql \
