@@ -13,21 +13,21 @@ build: builddocker
 
 link: linkedmysqlrun
 
-init: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+init: TAG SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
-mysqlinit: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
+mysqlinit: TAG SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
 
-mysqlrun: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
+mysqlrun: TAG SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
 
-linkedmysqlrun: SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
+linkedmysqlrun: TAG SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
 
-externinit: externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
+externinit: TAG externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
-externrun: SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
+externrun: TAG SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
-run: SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
+run: TAG SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
 
-runbuild: builddocker runpostgres runredis runredminit
+runbuild: TAG builddocker runpostgres runredis runredminit
 
 runredisinit:
 	$(eval NAME := $(shell cat NAME))
@@ -405,6 +405,11 @@ NAME:
 		read -r -p "Enter the name you wish to associate with this container [NAME]: " NAME; echo "$$NAME">>NAME; cat NAME; \
 	done ;
 
+TAG:
+	@while [ -z "$$TAG" ]; do \
+		read -r -p "Enter the tag you wish to associate with this redmine sameersbn/redmine for example [TAG]: " TAG; echo "$$TAG">>TAG; cat TAG; \
+	done ;
+
 DB_ADAPTER:
 	@while [ -z "$$DB_ADAPTER" ]; do \
 		read -r -p "Enter the DB_ADAPTER you wish to associate with this container [DB_ADAPTER]: " DB_ADAPTER; echo "$$DB_ADAPTER">>DB_ADAPTER; cat DB_ADAPTER; \
@@ -491,4 +496,5 @@ backlogs:
 	git checkout feature/redmine3 ; \
 	sed -i 's/gem "nokogiri"/#gem "nokogiri"/' Gemfile
 
-
+example:
+	cp -i TAG.example TAG
