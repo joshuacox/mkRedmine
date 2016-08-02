@@ -13,21 +13,21 @@ build: builddocker
 
 link: linkedmysqlrun
 
-init: TAG SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
+init: TAG IP SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rmall runpostgresinit runredisinit runredminit
 
-mysqlinit: TAG SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
+mysqlinit: TAG IP SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_NAME DB_USER DB_PASS NAME PORT rmall runmysqlinit mysqlrunredminit
 
-mysqlrun: TAG SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
+mysqlrun: TAG IP SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_USER DB_NAME DB_PASS NAME PORT rm runmysql mysqlrunredmine
 
-linkedmysqlrun: TAG SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
+linkedmysqlrun: TAG IP SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_USER DB_NAME DB_PASS NAME PORT rm  linkedmysqlrunredmine
 
-externinit: TAG externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
+externinit: TAG IP externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
-externrun: TAG SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
+externrun: TAG IP SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
-run: TAG SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
+run: TAG IP SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
 
-runbuild: TAG builddocker runpostgres runredis runredminit
+runbuild: TAG IP builddocker runpostgres runredis runredminit
 
 runredisinit:
 	$(eval NAME := $(shell cat NAME))
@@ -69,6 +69,7 @@ runmysqlinit:
 
 externrunredminit:
 	$(eval TAG := $(shell cat TAG))
+	$(eval IP := $(shell cat IP))
 	$(eval NAME := $(shell cat NAME))
 	$(eval PORT := $(shell cat PORT))
 	$(eval DB_NAME := $(shell cat DB_NAME))
@@ -82,7 +83,7 @@ externrunredminit:
 	$(eval DB_PASS := $(shell cat DB_PASS))
 	docker run --name=$(NAME) \
 	-d \
-	--publish=$(PORT):80 \
+	--publish=$(IP):$(PORT):80 \
 	--link=$(NAME)-redis-init:redis \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
@@ -113,7 +114,7 @@ runredminit:
 	-d \
 	--link=$(NAME)-postgresql-init:postgresql \
 	--link=$(NAME)-redis-init:redis \
-	--publish=$(PORT):80 \
+	--publish=$(IP):$(PORT):80 \
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_USER=$(DB_USER)" \
 	--env="DB_PASS=$(DB_PASS)" \
@@ -129,6 +130,7 @@ runredminit:
 mysqlrunredminit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval TAG := $(shell cat TAG))
+	$(eval IP := $(shell cat IP))
 	$(eval PORT := $(shell cat PORT))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
@@ -137,7 +139,7 @@ mysqlrunredminit:
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-mysql-init:mysql \
-	--publish=$(PORT):80 \
+	--publish=$(IP):$(PORT):80 \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env="SMTP_PORT=$(SMTP_PORT)" \
 	--env="SMTP_HOST=$(SMTP_HOST)" \
@@ -194,6 +196,7 @@ runmysql:
 externrunredmine:
 	$(eval NAME := $(shell cat NAME))
 	$(eval TAG := $(shell cat TAG))
+	$(eval IP := $(shell cat IP))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	$(eval DB_NAME := $(shell cat DB_NAME))
@@ -209,7 +212,7 @@ externrunredmine:
 	docker run --name=$(NAME) \
 	-d \
 	--link=$(NAME)-redis:redis \
-	--publish=$(PORT):80 \
+	--publish=$(IP):$(PORT):80 \
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_HOST=$(DB_HOST)" \
 	--env="DB_USER=$(DB_USER)" \
@@ -230,6 +233,7 @@ externrunredmine:
 runredmine:
 	$(eval NAME := $(shell cat NAME))
 	$(eval TAG := $(shell cat TAG))
+	$(eval IP := $(shell cat IP))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	$(eval DB_NAME := $(shell cat DB_NAME))
@@ -245,7 +249,7 @@ runredmine:
 	-d \
 	--link=$(NAME)-postgresql:postgresql \
 	--link=$(NAME)-redis:redis \
-	--publish=$(PORT):80 \
+	--publish=$(IP):$(PORT):80 \
 	--env="DB_NAME=$(DB_NAME)" \
 	--env="DB_USER=$(DB_USER)" \
 	--env="DB_PASS=$(DB_PASS)" \
@@ -284,6 +288,7 @@ mysqlrunredmine:
 linkedmysqlrunredmine:
 	$(eval NAME := $(shell cat NAME))
 	$(eval TAG := $(shell cat TAG))
+	$(eval IP := $(shell cat IP))
 	$(eval PORT := $(shell cat PORT))
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	$(eval SMTP_PASS := $(shell cat SMTP_PASS))
@@ -305,7 +310,7 @@ linkedmysqlrunredmine:
 	--env="DB_PASS=$(DB_PASS)" \
 	--env='REDMINE_HTTPS=true' \
 	--env="REDMINE_PORT=$(PORT)" \
-	--publish=$(PORT):80 \
+	--publish=$(IP):$(PORT):80 \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
 	$(TAG)
@@ -414,6 +419,11 @@ TAG:
 		read -r -p "Enter the tag you wish to associate with this redmine sameersbn/redmine for example [TAG]: " TAG; echo "$$TAG">>TAG; cat TAG; \
 	done ;
 
+IP:
+	@while [ -z "$$IP" ]; do \
+		read -r -p "Enter the tag you wish to associate with this redmine sameersbn/redmine for example [IP]: " IP; echo "$$IP">>IP; cat IP; \
+	done ;
+
 DB_ADAPTER:
 	@while [ -z "$$DB_ADAPTER" ]; do \
 		read -r -p "Enter the DB_ADAPTER you wish to associate with this container [DB_ADAPTER]: " DB_ADAPTER; echo "$$DB_ADAPTER">>DB_ADAPTER; cat DB_ADAPTER; \
@@ -506,5 +516,14 @@ crmagile:
 	cd $(REDMINE_DATADIR)/plugins ; \
 	git clone https://github.com/RCRM/redmine_agile.git
 
+scrum:
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	cd $(REDMINE_DATADIR)/plugins ; \
+	wget https://redmine.ociotec.com/attachments/download/384/scrum%20v0.14.0.tar.gz; \
+	tar zxvf scrum\ v0.14.0.tar.gz ; \
+	rm scrum\ v0.14.0.tar.gz ; \
+	mv scrum\ v0.14.0 scrum
+
 example:
 	cp -i TAG.example TAG
+	curl icanhazip.com > IP
