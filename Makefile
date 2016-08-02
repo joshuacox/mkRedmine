@@ -504,6 +504,7 @@ externaldbinfo:
 	-@sleep 5
 
 executeEmailRakeTask:
+	@cat emailRakeTask
 	@bash emailRakeTask
 
 emailRakeTask:
