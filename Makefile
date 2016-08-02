@@ -512,7 +512,16 @@ emailRakeTask:
 	$(eval SMTP_USER := $(shell cat SMTP_USER))
 	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
 	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
-	echo "docker exec -it $(NAME) sudo -u redmine -H bundle exec rake redmine:email:receive_imap RAILS_ENV="production" host=$(SMTP_HOST) port=$(SMTP_PORT) ssl=true username=$(SMTP_USER) password=$(SMTP_PASS)  folder=Inbox move_on_success=SUCCESS move_on_failure=failed project=contact tracker=support allow_override=priority,tracker,project no_permission_check=1 no_account_notice=1">emailRakeTask
+	$(eval SMTP_OPENSSL_VERIFY_MODE := $(shell cat SMTP_OPENSSL_VERIFY_MODE))
+	$(eval SMTP_TLS := $(shell cat SMTP_TLS))
+	$(eval SMTP_STARTTLS := $(shell cat SMTP_STARTTLS))
+	echo -n "docker exec -it $(NAME) ">emailRakeTask
+	echo -n " sudo -u redmine -H bundle exec rake redmine:email:receive_imap RAILS_ENV='production' ">emailRakeTask
+	echo -n " host=$(SMTP_HOST) port=$(SMTP_PORT) ssl=true username=$(SMTP_USER) password=$(SMTP_PASS) ">emailRakeTask
+	echo -n " starttls=$(SMTP_STARTTLS) ">emailRakeTask
+	echo -n " folder=Inbox move_on_success=SUCCESS move_on_failure=failed project=contact tracker=support ">emailRakeTask
+	echo -n " allow_override=priority,tracker,project no_permission_check=1 ">emailRakeTask
+	echo " no_account_notice=1">emailRakeTask
 	chmod +x emailRakeTask
 
 checkEmail: emailRakeTask executeEmailRakeTask
