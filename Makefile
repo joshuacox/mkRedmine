@@ -501,5 +501,10 @@ backlogs:
 	sed -i 's/gem "nokogiri"/#gem "nokogiri"/' Gemfile
 	sed -i 's/gem "capybara"/#gem "capybara"/' Gemfile
 
+crmagile:
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	cd $(REDMINE_DATADIR)/plugins ; \
+	git clone https://github.com/RCRM/redmine_agile.git
+
 example:
 	cp -i TAG.example TAG
