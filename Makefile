@@ -220,6 +220,7 @@ externrunredmine:
 	--env="SMTP_DOMAIN=$(SMTP_DOMAIN)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
+	--env='REDMINE_HTTPS=true' \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
@@ -253,6 +254,7 @@ runredmine:
 	--env="SMTP_OPENSSL_VERIFY_MODE=$(SMTP_OPENSSL_VERIFY_MODE)" \
 	--env="SMTP_DOMAIN=$(SMTP_DOMAIN)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
+	--env='REDMINE_HTTPS=true' \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
@@ -273,6 +275,7 @@ mysqlrunredmine:
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="REDMINE_PORT=$(PORT)" \
+	--env='REDMINE_HTTPS=true' \
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
 	--cidfile="redmineCID" \
@@ -300,6 +303,7 @@ linkedmysqlrunredmine:
 	--env="SMTP_USER=$(SMTP_USER)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
+	--env='REDMINE_HTTPS=true' \
 	--env="REDMINE_PORT=$(PORT)" \
 	--publish=$(PORT):80 \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
