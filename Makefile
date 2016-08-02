@@ -245,6 +245,8 @@ runredmine:
 	$(eval SMTP_PORT := $(shell cat SMTP_PORT))
 	$(eval SMTP_HOST := $(shell cat SMTP_HOST))
 	$(eval SMTP_OPENSSL_VERIFY_MODE := $(shell cat SMTP_OPENSSL_VERIFY_MODE))
+	$(eval SMTP_TLS := $(shell cat SMTP_TLS))
+	$(eval SMTP_STARTTLS := $(shell cat SMTP_STARTTLS))
 	$(eval SMTP_DOMAIN := $(shell cat SMTP_DOMAIN))
 	docker run --name=$(NAME) \
 	-d \
@@ -257,6 +259,8 @@ runredmine:
 	--env="SMTP_PORT=$(SMTP_PORT)" \
 	--env="SMTP_HOST=$(SMTP_HOST)" \
 	--env="SMTP_OPENSSL_VERIFY_MODE=$(SMTP_OPENSSL_VERIFY_MODE)" \
+	--env="SMTP_TLS=$(SMTP_TLS)" \
+	--env="SMTP_STARTTLS=$(SMTP_STARTTLS)" \
 	--env="SMTP_DOMAIN=$(SMTP_DOMAIN)" \
 	--env="SMTP_PASS=$(SMTP_PASS)" \
 	--env='REDMINE_HTTPS=true' \
@@ -458,6 +462,16 @@ SMTP_PORT:
 SMTP_DOMAIN:
 	@while [ -z "$$SMTP_DOMAIN" ]; do \
 		read -r -p "Enter the SMTP_DOMAIN you wish to associate with this container [SMTP_DOMAIN]: " SMTP_DOMAIN; echo "$$SMTP_DOMAIN">>SMTP_DOMAIN; cat SMTP_DOMAIN; \
+	done ;
+
+SMTP_TLS:
+	@while [ -z "$$SMTP_TLS" ]; do \
+		read -r -p "Enter the SMTP_TLS you wish to associate with this container [SMTP_TLS]: " SMTP_TLS; echo "$$SMTP_TLS">>SMTP_TLS; cat SMTP_TLS; \
+	done ;
+
+SMTP_STARTTLS:
+	@while [ -z "$$SMTP_STARTTLS" ]; do \
+		read -r -p "Enter the SMTP_STARTTLS you wish to associate with this container [SMTP_STARTTLS]: " SMTP_STARTTLS; echo "$$SMTP_STARTTLS">>SMTP_STARTTLS; cat SMTP_STARTTLS; \
 	done ;
 
 SMTP_OPENSSL_VERIFY_MODE:
