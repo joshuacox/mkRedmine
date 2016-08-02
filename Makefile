@@ -542,3 +542,7 @@ scrum:
 example:
 	cp -i TAG.example TAG
 	curl icanhazip.com > IP
+	echo 'false' > SMTP_TLS
+	echo 'true' > SMTP_STARTTLS
+	echo 'smtp.gmail.com' > SMTP_HOST
+	echo 'www.gmail.com' > SMTP_DOMAIN
