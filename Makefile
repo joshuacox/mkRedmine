@@ -102,6 +102,7 @@ externrunredminit:
 runredminit:
 	$(eval NAME := $(shell cat NAME))
 	$(eval TAG := $(shell cat TAG))
+	$(eval IP := $(shell cat IP))
 	$(eval PORT := $(shell cat PORT))
 	$(eval DB_NAME := $(shell cat DB_NAME))
 	$(eval DB_USER := $(shell cat DB_USER))
