@@ -518,7 +518,7 @@ emailRakeTask:
 	$(eval SMTP_STARTTLS := $(shell cat SMTP_STARTTLS))
 	echo -n "docker exec -it $(NAME) ">emailRakeTask
 	echo -n " sudo -u redmine -H bundle exec rake redmine:email:receive_imap RAILS_ENV='production' ">emailRakeTask
-	echo -n " host=$(SMTP_HOST) port=$(SMTP_PORT) ssl=true username=$(SMTP_USER) password=$(SMTP_PASS) ">emailRakeTask
+	echo -n " host=$(SMTP_HOST) port=$(SMTP_PORT) ssl=$(SMTP_TLS) username=$(SMTP_USER) password=$(SMTP_PASS) ">emailRakeTask
 	echo -n " starttls=$(SMTP_STARTTLS) ">emailRakeTask
 	echo -n " folder=Inbox move_on_success=SUCCESS move_on_failure=failed project=contact tracker=support ">emailRakeTask
 	echo -n " allow_override=priority,tracker,project no_permission_check=1 ">emailRakeTask
