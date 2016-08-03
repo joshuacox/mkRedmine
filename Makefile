@@ -535,11 +535,13 @@ backlogs:
 	git checkout feature/redmine3 ; \
 	sed -i 's/gem "nokogiri"/#gem "nokogiri"/' Gemfile
 	sed -i 's/gem "capybara"/#gem "capybara"/' Gemfile
+	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
 
 crmagile:
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	cd $(REDMINE_DATADIR)/plugins ; \
 	git clone https://github.com/RCRM/redmine_agile.git
+	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
 
 scrum:
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
@@ -547,7 +549,8 @@ scrum:
 	wget https://redmine.ociotec.com/attachments/download/384/scrum%20v0.14.0.tar.gz; \
 	tar zxvf scrum\ v0.14.0.tar.gz ; \
 	rm scrum\ v0.14.0.tar.gz ; \
-	mv scrum\ v0.14.0 scrum
+	mv scrum\ v0.14.0 scru
+	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
 
 example:
 	cp -i TAG.example TAG
