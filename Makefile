@@ -29,6 +29,8 @@ run: TAG IP SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS S
 
 runbuild: TAG IP builddocker runpostgres runredis runredminit
 
+next: grab rminit run
+
 runredisinit:
 	$(eval NAME := $(shell cat NAME))
 	docker run --name $(NAME)-redis-init \
@@ -570,4 +572,3 @@ theme:
 	git clone https://github.com/Thalhalla/NeoArchaicRedmineTheme.git ; \
 	chown -R 1000:1000 $(REDMINE_DATADIR)/themes
 	rm -Rf $(REDMINE_DATADIR)/tmp
-
