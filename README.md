@@ -10,6 +10,14 @@ Run a base redmine with initial database
 make init
 ```
 
+Now `next`  which will grab the datadirectories for peristence remove the init container, and restart using the `run` recipe
+
+```
+make next
+```
+
+#### manual
+
 Now `grab` the datadirectories for peristence
 
 ```
