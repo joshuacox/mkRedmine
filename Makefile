@@ -565,6 +565,7 @@ example:
 	echo 'smtp.gmail.com' > SMTP_HOST
 	echo 'www.gmail.com' > SMTP_DOMAIN
 	echo '587' > SMTP_PORT
+	touch 	SMTP_OPENSSL_VERIFY_MODE
 
 theme:
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
