@@ -563,3 +563,11 @@ example:
 	echo 'smtp.gmail.com' > SMTP_HOST
 	echo 'www.gmail.com' > SMTP_DOMAIN
 	echo '587' > SMTP_PORT
+
+theme:
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	cd $(REDMINE_DATADIR)/themes ; \
+	git clone https://github.com/Thalhalla/NeoArchaicRedmineTheme.git ; \
+	chown -R 1000:1000 $(REDMINE_DATADIR)/themes
+	rm -Rf $(REDMINE_DATADIR)/tmp
+
