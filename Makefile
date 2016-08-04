@@ -562,3 +562,4 @@ example:
 	echo 'true' > SMTP_STARTTLS
 	echo 'smtp.gmail.com' > SMTP_HOST
 	echo 'www.gmail.com' > SMTP_DOMAIN
+	echo '587' > SMTP_PORT
