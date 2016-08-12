@@ -29,6 +29,8 @@ run: TAG IP SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS S
 
 runbuild: TAG IP builddocker runpostgres runredis runredminit
 
+next: grab rminit run
+
 runredisinit:
 	$(eval NAME := $(shell cat NAME))
 	docker run --name $(NAME)-redis-init \
@@ -535,11 +537,15 @@ backlogs:
 	git checkout feature/redmine3 ; \
 	sed -i 's/gem "nokogiri"/#gem "nokogiri"/' Gemfile
 	sed -i 's/gem "capybara"/#gem "capybara"/' Gemfile
+	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
+	rm -Rf $(REDMINE_DATADIR)/tmp
 
 crmagile:
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
 	cd $(REDMINE_DATADIR)/plugins ; \
 	git clone https://github.com/RCRM/redmine_agile.git
+	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
+	rm -Rf $(REDMINE_DATADIR)/tmp
 
 scrum:
 	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
@@ -548,6 +554,8 @@ scrum:
 	tar zxvf scrum\ v0.14.0.tar.gz ; \
 	rm scrum\ v0.14.0.tar.gz ; \
 	mv scrum\ v0.14.0 scrum
+	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
+	rm -Rf $(REDMINE_DATADIR)/tmp
 
 example:
 	cp -i TAG.example TAG
@@ -556,5 +564,14 @@ example:
 	echo 'true' > SMTP_STARTTLS
 	echo 'smtp.gmail.com' > SMTP_HOST
 	echo 'www.gmail.com' > SMTP_DOMAIN
+	echo '587' > SMTP_PORT
+	touch 	SMTP_OPENSSL_VERIFY_MODE
 
 next: grab rminit run
+
+theme:
+	$(eval REDMINE_DATADIR := $(shell cat REDMINE_DATADIR))
+	cd $(REDMINE_DATADIR)/themes ; \
+	git clone https://github.com/Thalhalla/NeoArchaicRedmineTheme.git ; \
+	chown -R 1000:1000 $(REDMINE_DATADIR)/themes
+	rm -Rf $(REDMINE_DATADIR)/tmp
