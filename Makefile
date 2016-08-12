@@ -428,7 +428,7 @@ TAG:
 
 IP:
 	@while [ -z "$$IP" ]; do \
-		read -r -p "Enter the tag you wish to associate with this redmine sameersbn/redmine for example [IP]: " IP; echo "$$IP">>IP; cat IP; \
+		read -r -p "Enter the IP you wish to associate with this redmine [IP]: " IP; echo "$$IP">>IP; cat IP; \
 	done ;
 
 DB_ADAPTER:
