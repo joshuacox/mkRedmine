@@ -384,6 +384,9 @@ enter:
 pgenter:
 	docker exec -i -t `cat postgresCID` /bin/bash
 
+clearcache:
+	docker exec -i -t `cat redmineCID` sudo -u redmine -H RAILS_ENV=production bundle exec rake tmp:cache:clear tmp:sessions:clear
+
 grab: grabredminedir grabpostgresdatadir grabredisdatadir
 
 mysqlgrab: grabredminedir grabmysqldatadir
