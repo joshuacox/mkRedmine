@@ -23,7 +23,7 @@ linkedmysqlrun: TAG IP SMTP_HOST SMTP_PORT  SMTP_PASS SMTP_USER DB_HOST DB_ADAPT
 
 externinit: TAG IP externaldbinfo SMTP_PASS SMTP_USER  DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredisinit externrunredminit
 
-externrun: TAG IP SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
+externrun: TAG IP REDMINE_HTTPS SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_HOST DB_ADAPTER DB_NAME DB_USER DB_PASS NAME PORT rmall runredis externrunredmine
 
 run: TAG IP SMTP_DOMAIN SMTP_OPENSSL_VERIFY_MODE SMTP_HOST SMTP_PORT SMTP_PASS SMTP_USER DB_NAME DB_PASS NAME PORT rmall runpostgres runredis runredmine
 
@@ -226,7 +226,7 @@ externrunredmine:
 	--env="SMTP_DOMAIN=$(SMTP_DOMAIN)" \
 	--env="DB_ADAPTER=$(DB_ADAPTER)" \
 	--env="DB_PASS=$(DB_PASS)" \
-	--env='REDMINE_HTTPS=true' \
+	--env='REDMINE_HTTPS=$(REDMINE_HTTPS)' \
 	--env="REDMINE_PORT=$(PORT)" \
 	--env='REDIS_URL=redis://redis:6379/12' \
 	--volume=$(REDMINE_DATADIR):/home/redmine/data \
@@ -423,6 +423,12 @@ NAME:
 	@while [ -z "$$NAME" ]; do \
 		read -r -p "Enter the name you wish to associate with this container [NAME]: " NAME; echo "$$NAME">>NAME; cat NAME; \
 	done ;
+
+REDMINE_HTTPS:
+	@while [ -z "$$REDMINE_HTTPS" ]; do \
+		read -r -p "Enter whether you wish to redmine to enforce https (depending on your upstream proxies)  with this container (true or false) [REDMINE_HTTPS]: " REDMINE_HTTPS; echo "$$REDMINE_HTTPS">>REDMINE_HTTPS; cat REDMINE_HTTPS; \
+	done ;
+
 
 TAG:
 	@while [ -z "$$TAG" ]; do \
