@@ -21,7 +21,7 @@ rm:
 
 # By default use the examples
 # but do not overwrite them after that
-config: redmine.env db.env docker-compose.yml
+config: redmine.env db.env docker-compose.yml configuration.yml
 
 redmine.env:
 	cp redmine.env.example redmine.env
@@ -31,6 +31,9 @@ db.env:
 
 docker-compose.yml:
 	cp docker-compose.yml.example docker-compose.yml
+
+configuration.yml:
+	cp configuration.yml.example configuration.yml
 
 # Aliases
 u: up
