@@ -36,7 +36,11 @@ d: down
 
 h: help
 
-config: example
+c: config
+
+conf: config
+
+example: config
 
 ## deprecated
 
