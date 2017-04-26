@@ -12,7 +12,8 @@ services:
       - db
     restart: always
     volumes:
-    - /srv/docker/redmine/redmine:/home/redmine/data
+    - /srv/docker/redmine/redmine:/usr/src/redmine/files
+    - /srv/docker/redmine/redmineplugins:/usr/src/redmine/plugins
 
   db:
     image: mysql:5.5
