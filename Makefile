@@ -1,13 +1,39 @@
 .PHONY: all help build run builddocker rundocker kill rm-image rm clean enter logs
 ######################################REDMINIT
 
-all: help
+all: up
 
 help:
 	@echo ""
 	@echo "-- Help Menu"
 	@echo ""  This is merely a base image for usage read the README file
-	@echo ""   1. make run       - build and run docker container
+	@echo ""   1. make up       - build and run docker stack
+	@echo ""   1. make down       - shut down docker stack
+
+up: config
+	docker-compose up -d
+
+down:
+	docker-compose down
+
+u: up
+
+d: down
+
+# By default use the examples
+# but do not overwrite them after that
+config: redmine.env db.env docker-compose.yml
+
+redmine.env:
+	cp redmine.env.example redmine.env
+
+db.env:
+	cp db.env.example db.env
+
+docker-compose.yml:
+	cp docker-compose.yml.example docker-compose.yml
+
+## deprecated
 
 build: builddocker
 
@@ -566,7 +592,7 @@ scrum:
 	chown -R 1000:1000 $(REDMINE_DATADIR)/plugins
 	rm -Rf $(REDMINE_DATADIR)/tmp
 
-example:
+example2:
 	cp -i TAG.example TAG
 	curl icanhazip.com > IP
 	echo 'false' > SMTP_TLS
