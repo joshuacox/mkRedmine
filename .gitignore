@@ -1,6 +1,7 @@
 redmine.env
 db.env
 docker-compose.yml
+configuration.yml
 
 datadir
 IP
