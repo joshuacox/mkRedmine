@@ -19,4 +19,5 @@ services:
     env_file:
       db.env
     restart: always
+    volumes:
     - /srv/docker/redmine/mysql:/var/lib/mysql
