@@ -16,10 +16,6 @@ up: config
 down:
 	docker-compose down
 
-u: up
-
-d: down
-
 # By default use the examples
 # but do not overwrite them after that
 config: redmine.env db.env docker-compose.yml
@@ -32,6 +28,15 @@ db.env:
 
 docker-compose.yml:
 	cp docker-compose.yml.example docker-compose.yml
+
+# Aliases
+u: up
+
+d: down
+
+h: help
+
+config: example
 
 ## deprecated
 
